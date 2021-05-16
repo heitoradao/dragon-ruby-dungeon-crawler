@@ -1,0 +1,7 @@
+devid=HAJ
+devtitle=HAJ
+gameid=sewercrawler
+gametitle=Sewer Crawler from Hell
+version=0.1
+icon=metadata/icon.png
+compile_ruby=false
