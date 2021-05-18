@@ -1,5 +1,8 @@
+require 'app/character.rb'
+
 class Player
-  attr_accessor :x, :y, :w, :h
+  include Character
+
   attr_accessor :attacked_at, :angle
   attr_accessor :damage
 
@@ -8,6 +11,7 @@ class Player
     @y = 360
     @w = TILE_WIDTH
     @h = TILE_HEIGTH
+
     @attacked_at = -1
     @angle = 0
     @damage = 0
@@ -27,10 +31,6 @@ class Player
       tile_h: TILE_HEIGTH,
     #, angle: angle
     )
-  end
-
-  def future_player
-    future_entity_position 0, 0
   end
 
   def projectiles
@@ -53,13 +53,39 @@ class Player
       h: h }.merge(args)
   end
 
-  def direction_to_index
-    { 2 => TILE_HEIGTH * 0,
-      4 => TILE_HEIGTH * 1,
-      6 => TILE_HEIGTH * 2,
-      8 => TILE_HEIGTH * 3 }
+  def input args
+    angle = args.inputs.directional_angle || angle
+
+    if angle == 90.0
+      @direction = 8
+    elsif angle == 180.0
+      @direction = 4
+    elsif angle == 0.0
+      @direction = 6
+    elsif angle == -90.0
+      @direction = 2
+    end
+    #if args.inputs.controller_one.key_down.a || args.inputs.keyboard.key_down.space
+    #  attacked_at = args.state.tick_count
+    #end
   end
 
-  TILE_WIDTH = 32
-  TILE_HEIGTH = 32
+  def calc (args)
+    if attacked_at == args.state.tick_count
+      projectiles << { at: args.state.tick_count,
+                       x: x,
+                       y: y,
+                       angle: angle,
+                       w: 16,
+                       h: 16 }.center_inside_rect(self)
+    end
+=begin
+    if attacked_at.elapsed_time > 5
+      future_player = future_entity_position(args.inputs.left_right * 2, args.inputs.up_down * 2)
+      future_player_collision = future_collision(player, future_player, level.walls)
+      player.x = future_player_collision.x if !future_player_collision.dx_collision
+      player.y = future_player_collision.y if !future_player_collision.dy_collision
+    end
+=end
+  end
 end

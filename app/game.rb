@@ -12,9 +12,11 @@ class Game
     calc
   end
 
+
   def defaults
-    state.level ||= LevelFactory.create_level(LevelFactory.level_one_template)
+    state.level ||= LevelFactory.create_level_one_template
   end
+
 
   def render
     outputs.sprites << level.walls.map do |w|
@@ -32,36 +34,42 @@ class Game
     outputs.sprites << level.enemies.map do |e|
       e.merge(path: 'sprites/square/red.png')
     end
-    #@enemy.render(args)
 
     player.render(args)
 
     outputs.labels << { x: 30, y: 30.from_top, text: "damage: #{player.damage || 0}" }
-
+    outputs.labels << { x: 30, y: 60.from_top, text: "angle: #{inputs.directional_angle || player.angle}" }
   end
 
+
   def input
+    player.input(args)
+
     player.angle = inputs.directional_angle || player.angle
     if inputs.controller_one.key_down.a || inputs.keyboard.key_down.space
       player.attacked_at = state.tick_count
     end
   end
 
+
   def calc
     calc_player
+    #player.calc args
     calc_projectiles
     calc_enemies
     calc_spawn_locations
   end
 
+
+ #=begin
   def calc_player
     if player.attacked_at == state.tick_count
       player.projectiles << { at: state.tick_count,
                               x: player.x,
                               y: player.y,
                               angle: player.angle,
-                              w: 4,
-                              h: 4 }.center_inside_rect(player)
+                              w: 16,
+                              h: 16 }.center_inside_rect(player)
     end
 
     if player.attacked_at.elapsed_time > 5
@@ -71,6 +79,8 @@ class Game
       player.y = future_player_collision.y if !future_player_collision.dy_collision
     end
   end
+ #=end
+
 
   def calc_projectile_collisions entities
     entities.each do |e|
@@ -84,6 +94,7 @@ class Game
     end
   end
 
+
   def calc_projectiles
     player.projectiles.map! do |p|
       dx, dy = p.angle.vector 10
@@ -96,6 +107,7 @@ class Game
     level.enemies.reject! { |e| e.damage > e.hp }
     level.spawn_locations.reject! { |s| s.damage > s.hp }
   end
+
 
   def calc_enemies
     level.enemies.map! do |e|
@@ -125,6 +137,7 @@ class Game
     end
   end
 
+
   def calc_spawn_locations
     level.spawn_locations.map! do |s|
       s.merge(countdown: s.countdown - 1)
@@ -141,19 +154,23 @@ class Game
     end
   end
 
+
   def create_enemy spawn_location
     to_cell(spawn_location.ordinal_x, spawn_location.ordinal_y).merge hp: 2
   end
+
 
   def player
     state.player ||= Player.new
   end
 
+
   def level
     state.level ||= LevelFactory.create_level(LevelFactory.level_one_template)
   end
 
-  def future_collision entity, future_entity, others
+
+  def future_collision (entity, future_entity, others)
     dx_collision = others.find { |o| o != entity && (o.intersect_rect? future_entity.dx) }
     dy_collision = others.find { |o| o != entity && (o.intersect_rect? future_entity.dy) }
 
@@ -165,7 +182,8 @@ class Game
     }
   end
 
-  def future_entity_position dx, dy, entity
+
+  def future_entity_position (dx, dy, entity)
     {
       dx:   entity.merge(x: entity.x + dx),
       dy:   entity.merge(y: entity.y + dy),
@@ -173,9 +191,11 @@ class Game
     }
   end
 
+
   def future_player_position  dx, dy
     future_entity_position dx, dy, player
   end
+
 
   def to_cell ordinal_x, ordinal_y
     { x: ordinal_x * 16, y: ordinal_y * 16, w: 16, h: 16 }
