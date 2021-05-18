@@ -26,26 +26,26 @@ def tick(args)
   #args.outputs.sprites << [576, 280, 128, 101, 'dragonruby.png']
   #args.outputs.sprites << [0, 0, 384, 256, 'sprites/monster4.png']
   args.outputs.sprites << args.state.enemy.render(args)
-  
-  
+
+
   if args.inputs.keyboard.key_up.h
     #args.state.h_pressed_at = args.state.tick_count
     $gtk.console.open
   end
-  
-  if args.inputs.keyboard.key_up.up
+
+  if args.inputs.keyboard.key_held.up
     args.state.enemy.direction = 8
     args.state.enemy.y += 1
   end
-  if args.inputs.keyboard.key_up.down
+  if args.inputs.keyboard.key_held.down
     args.state.enemy.direction = 2
     args.state.enemy.y -= 1
   end
-  if args.inputs.keyboard.key_up.left
+  if args.inputs.keyboard.key_held.left
     args.state.enemy.direction = 4
     args.state.enemy.x -= 1
   end
-  if args.inputs.keyboard.key_up.right
+  if args.inputs.keyboard.key_held.right
     args.state.enemy.direction = 6
     args.state.enemy.x += 1
   end
