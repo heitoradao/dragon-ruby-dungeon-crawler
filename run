@@ -1,5 +1,5 @@
 #!/bin/sh
-cd "`dirname "$0"`"
 
+project_dir=${PWD##*/}
 cd ..
-exec ./dragonruby mygame
+exec ./dragonruby $project_dir
