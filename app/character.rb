@@ -4,23 +4,18 @@ total  = 384 x 256
 1 tile = 32 x 32 
 =end
 
-class Character
+module Character
   TILE_WIDTH = 32
   TILE_HEIGTH = 32
-  attr_accessor :x, :y, :direction
 
-  def initialize(sprite_sheet, char_index)
-    @sprite_sheet = sprite_sheet
-    @char_index = char_index
-    @direction = 2
-    @x = 100
-    @y = 100
-  end
-  
-  def self.tick(args)
-    args.outputs.labels  << [640, 500, 'printed inside Character', 5, 1]
-  end
-  
+  attr_accessor :x, :y
+  attr_accessor :w, :h
+  attr_accessor :direction
+
+  attr_accessor :visible
+  alias_method :visible?, :visible
+
+
   def render(args)
     frame = (1 - args.state.tick_count.idiv(16).mod(4)).abs
     {
@@ -36,25 +31,32 @@ class Character
       #flip_horizontally: args.state.player.direction > 0
     }
   end
-  
+
   def serialize
-    {x: @x, y: @y, direction: @direction, sprite_sheet: @sprite_sheet}
+    {
+      x: @x,
+      y: @y,
+      direction: @direction,
+      sprite_sheet: @sprite_sheet
+    }
   end
-  
+
   def to_s
     serialize.to_s
   end
-  
+
   def inspect
     serialize.to_s
   end
-  
+
   private
-  
+
   def direction_to_index
-    { 2 => TILE_HEIGTH * 0,
+    {
+      2 => TILE_HEIGTH * 0,
       4 => TILE_HEIGTH * 1,
       6 => TILE_HEIGTH * 2,
-      8 => TILE_HEIGTH * 3}
+      8 => TILE_HEIGTH * 3
+    }
   end
 end
