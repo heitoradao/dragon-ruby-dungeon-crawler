@@ -6,31 +6,14 @@ class Game
   attr_gtk
 
   def tick
-    defaults
     render
     input
     calc
   end
 
 
-  def defaults
-    state.level ||= LevelFactory.create_level_one_template
-  end
-
-
   def render
-    outputs.sprites << level.walls.map do |w|
-      w.merge(path: 'sprites/square/gray.png')
-    end
-
-    outputs.sprites << level.spawn_locations.map do |s|
-      s.merge(path: 'sprites/square/blue.png')
-    end
-
-    outputs.sprites << level.enemies.map do |e|
-      e.merge(path: 'sprites/square/red.png')
-    end
-
+    level.render(outputs)
     player.render(args)
 
     outputs.labels << { x: 30, y: 30.from_top, text: "damage: #{player.damage || 0}" }
@@ -159,7 +142,7 @@ class Game
 
 
   def level
-    state.level ||= LevelFactory.create_level(LevelFactory.level_one_template)
+    state.level ||= LevelFactory.create_level_one_template
   end
 
 
