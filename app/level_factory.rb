@@ -4,6 +4,7 @@ class LevelFactory
 
 
   def self.create_level_one_template
+
     structure = {
       walls:           [{ ordinal_x: 25, ordinal_y: 20},
                         { ordinal_x: 25, ordinal_y: 21},
@@ -12,11 +13,7 @@ class LevelFactory
       spawn_locations: [{ ordinal_x: 10, ordinal_y: 10, rate: 120, countdown: 0, hp: 5 }]
     }
 
-    {
-      walls:           structure.walls.map { |w| to_cell(w.ordinal_x, w.ordinal_y).merge(w) },
-      enemies:         [],
-      spawn_locations: structure.spawn_locations.map { |s| to_cell(s.ordinal_x, s.ordinal_y).merge(s) }
-    }
+    level_one = Level.from_hash(structure)
   end
 
 
