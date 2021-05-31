@@ -27,10 +27,6 @@ class Game
       s.merge(path: 'sprites/square/blue.png')
     end
 
-    outputs.sprites << player.projectiles.map do |p|
-      p.merge(path: 'sprites/square/blue.png')
-    end
-
     outputs.sprites << level.enemies.map do |e|
       e.merge(path: 'sprites/square/red.png')
     end
@@ -54,14 +50,12 @@ class Game
 
   def calc
     calc_player
-    #player.calc args
     calc_projectiles
     calc_enemies
     calc_spawn_locations
   end
 
 
- #=begin
   def calc_player
     if player.attacked_at == state.tick_count
       player.projectiles << { at: state.tick_count,
@@ -79,7 +73,6 @@ class Game
       player.y = future_player_collision.y if !future_player_collision.dy_collision
     end
   end
- #=end
 
 
   def calc_projectile_collisions entities
