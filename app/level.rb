@@ -52,4 +52,12 @@ class Level
       enemies: enemies,
       spawn_locations: spawn_locations }
   end
+
+  def inspect
+    serialize.to_s
+  end
+
+  def to_s
+    serialize.to_s
+  end
 end
