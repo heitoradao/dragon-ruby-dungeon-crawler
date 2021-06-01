@@ -6,35 +6,14 @@ class Game
   attr_gtk
 
   def tick
-    defaults
     render
     input
     calc
   end
 
 
-  def defaults
-    state.level ||= LevelFactory.create_level_one_template
-  end
-
-
   def render
-    outputs.sprites << level.walls.map do |w|
-      w.merge(path: 'sprites/square/gray.png')
-    end
-
-    outputs.sprites << level.spawn_locations.map do |s|
-      s.merge(path: 'sprites/square/blue.png')
-    end
-
-    outputs.sprites << player.projectiles.map do |p|
-      p.merge(path: 'sprites/square/blue.png')
-    end
-
-    outputs.sprites << level.enemies.map do |e|
-      e.merge(path: 'sprites/square/red.png')
-    end
-
+    level.render(outputs)
     player.render(args)
 
     outputs.labels << { x: 30, y: 30.from_top, text: "damage: #{player.damage || 0}" }
@@ -43,43 +22,45 @@ class Game
 
 
   def input
-    player.input(args)
+    player.input(args, inputs)
+
+    if inputs == args.inputs
+      $gtk.console.log 'inputs é igual'
+    end
 
     player.angle = inputs.directional_angle || player.angle
     if inputs.controller_one.key_down.a || inputs.keyboard.key_down.space
       player.attacked_at = state.tick_count
+      $gtk.console.log '[HAJ]: (inputs.controller_one.key_down.a || inputs.keyboard.key_down.space)'
+    end
+
+    if inputs.keyboard.key_down.q
+      $gtk.console.log 'hello'
     end
   end
 
 
   def calc
     calc_player
-    #player.calc args
     calc_projectiles
     calc_enemies
     calc_spawn_locations
   end
 
 
- #=begin
   def calc_player
-    if player.attacked_at == state.tick_count
-      player.projectiles << { at: state.tick_count,
-                              x: player.x,
-                              y: player.y,
-                              angle: player.angle,
-                              w: 16,
-                              h: 16 }.center_inside_rect(player)
-    end
+    player.calc(args)
 
     if player.attacked_at.elapsed_time > 5
+
       future_player = future_player_position inputs.left_right * 2, inputs.up_down * 2
+      #future_player = player.merge player.future_position(inputs.left_right * 2, inputs.up_down * 2)
+
       future_player_collision = future_collision player, future_player, level.walls
       player.x = future_player_collision.x if !future_player_collision.dx_collision
       player.y = future_player_collision.y if !future_player_collision.dy_collision
     end
   end
- #=end
 
 
   def calc_projectile_collisions entities
@@ -155,7 +136,7 @@ class Game
   end
 
 
-  def create_enemy spawn_location
+  def create_enemy (spawn_location)
     to_cell(spawn_location.ordinal_x, spawn_location.ordinal_y).merge hp: 2
   end
 
@@ -166,7 +147,7 @@ class Game
 
 
   def level
-    state.level ||= LevelFactory.create_level(LevelFactory.level_one_template)
+    state.level ||= LevelFactory.create_level_one_template
   end
 
 

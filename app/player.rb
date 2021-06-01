@@ -2,9 +2,12 @@ require 'app/character.rb'
 
 class Player
   include Character
+  include GTK::Geometry
 
   attr_accessor :attacked_at, :angle
   attr_accessor :damage
+
+  ATTACK_DELAY = 5
 
   def initialize
     @x = 640
@@ -29,15 +32,18 @@ class Player
       tile_y: direction_to_index[@direction] + ((@char_index.div 4) * TILE_HEIGTH * 4),
       tile_w: TILE_WIDTH,
       tile_h: TILE_HEIGTH,
-    #, angle: angle
     )
+
+    args.outputs.sprites << projectiles.map do |p|
+      p.merge(path: 'sprites/square/blue.png')
+    end
   end
 
   def projectiles
     @projectiles
   end
 
-  def future_entity_position dx, dy
+  def future_position (dx, dy)
     {
       dx:   x + dx,
       dy:   y + dy,
@@ -53,8 +59,8 @@ class Player
       h: h }.merge(args)
   end
 
-  def input args
-    angle = args.inputs.directional_angle || angle
+  def input (args, inputs)
+    angle = inputs.directional_angle || angle
 
     if angle == 90.0
       @direction = 8
@@ -65,9 +71,10 @@ class Player
     elsif angle == -90.0
       @direction = 2
     end
-    #if args.inputs.controller_one.key_down.a || args.inputs.keyboard.key_down.space
-    #  attacked_at = args.state.tick_count
-    #end
+
+    if inputs.controller_one.key_down.a || inputs.keyboard.key_down.space
+      attacked_at = args.state.tick_count
+    end
   end
 
   def calc (args)
@@ -79,13 +86,21 @@ class Player
                        w: 16,
                        h: 16 }.center_inside_rect(self)
     end
+
 =begin
     if attacked_at.elapsed_time > 5
-      future_player = future_entity_position(args.inputs.left_right * 2, args.inputs.up_down * 2)
-      future_player_collision = future_collision(player, future_player, level.walls)
+      future_player = merge future_position(args.inputs.left_right * 2, args.inputs.up_down * 2)
+      #future_player_collision = future_collision(player, future_player, level.walls)
       player.x = future_player_collision.x if !future_player_collision.dx_collision
       player.y = future_player_collision.y if !future_player_collision.dy_collision
     end
 =end
+  end
+
+  def calc_projectiles
+    projectiles.map! do |p|
+      dx, dy = p.angle.vector 10
+      p.merge(x: p.x + dx, y: p.y + dy)
+    end
   end
 end
