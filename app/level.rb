@@ -36,7 +36,13 @@ class Level
 
   def render_enemies (outputs)
     outputs.sprites << enemies.map do |e|
-      e.merge(path: 'sprites/square/red.png')
+      e.merge(path: 'Characters/Monster1.png',
+              tile_x: 4 * 32,
+              tile_y: 0,
+              tile_w: 32,
+              tile_h: 32,
+              w: 32,
+              h: 32,)
     end
   end
 
