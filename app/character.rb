@@ -1,7 +1,7 @@
 =begin
 total  = 384 x 256
 1 char = 96 x 128
-1 tile = 32 x 32 
+1 tile = 32 x 32
 =end
 
 module Character
@@ -60,3 +60,4 @@ module Character
     }
   end
 end
+

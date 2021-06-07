@@ -24,14 +24,9 @@ class Game
   def input
     player.input(args, inputs)
 
-    if inputs == args.inputs
-      $gtk.console.log 'inputs é igual'
-    end
-
     player.angle = inputs.directional_angle || player.angle
     if inputs.controller_one.key_down.a || inputs.keyboard.key_down.space
       player.attacked_at = state.tick_count
-      $gtk.console.log '[HAJ]: (inputs.controller_one.key_down.a || inputs.keyboard.key_down.space)'
     end
 
     if inputs.keyboard.key_down.q
