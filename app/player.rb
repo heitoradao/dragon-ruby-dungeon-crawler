@@ -1,3 +1,5 @@
+# string_freeze: true
+
 require 'app/character.rb'
 
 class Player
@@ -7,7 +9,21 @@ class Player
   attr_accessor :attacked_at, :angle
   attr_accessor :damage
 
+  # 0 axe
+  # 3 sword
+  # 4 katana
+  # 6 dagger
+  # 7 club
+  # 8 staff
+  # 10 boomerang
+  # 11 scite
+  # 15 shuriken
+  PROJECTILE_TYPE = 3
   ATTACK_DELAY = 5
+  PROJECTILE_ROTATION_SPEED = 14
+  PROJECTILE_SIZE = 24
+
+  # ----------------------------------------------------
 
   def initialize
     @x = 640
@@ -34,8 +50,16 @@ class Player
       tile_h: TILE_HEIGTH,
     )
 
+    angle = args.state.tick_count * PROJECTILE_ROTATION_SPEED
     args.outputs.sprites << projectiles.map do |p|
-      p.merge(path: 'sprites/square/blue.png')
+      p.merge( path: 'sprites/IconSet.png',
+               tile_x: PROJECTILE_TYPE * PROJECTILE_SIZE,
+               tile_y: 9 * PROJECTILE_SIZE,
+               tile_w: PROJECTILE_SIZE,
+               tile_h: PROJECTILE_SIZE,
+               angle: angle,
+               w: PROJECTILE_SIZE,
+               h: PROJECTILE_SIZE )
     end
   end
 
